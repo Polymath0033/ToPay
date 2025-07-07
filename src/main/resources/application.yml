@@ -1,0 +1,19 @@
+jwt:
+  secret: pFK9UJNl6iMm47GJmh0pfatt0LOuyzXRTWLcothPG18=
+  expiration:
+    access: 3600000
+    refresh: 60480000
+
+
+spring:
+  application:
+    name: ToPay
+  datasource:
+    password: psql1234@
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/to_pay
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
