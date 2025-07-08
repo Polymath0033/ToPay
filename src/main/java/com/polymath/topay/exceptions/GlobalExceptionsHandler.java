@@ -12,6 +12,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -50,6 +51,14 @@ public class GlobalExceptionsHandler {
         String message = extractFriendlyMessage(ex);
         ApiResponse<Object> response = ApiResponse.error(HttpStatus.BAD_REQUEST.value(),"bad request",message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(HttpClientErrorException.Forbidden.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ApiResponse<Object>> handleHttpClientErrorExceptionForbidden(HttpClientErrorException.Forbidden ex){
+        String message = extractFriendlyMessage(ex);
+        ApiResponse<Object> response = ApiResponse.error(HttpStatus.FORBIDDEN.value(),"forbidden",message);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(SQLException.class)

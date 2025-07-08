@@ -75,19 +75,14 @@ public class MerchantService {
     @Transactional
     public MerchantResponse loginMerchant(String email,String password){
         try {
-            Merchants merchants = merchantsRepository.findByEmail(email).orElseThrow(()->new CustomNotFound("Email not found"));
             Teams teams = teamRepository.findByEmail(email).orElseThrow(()->new CustomNotFound("Email not found"));
-
-            if(!merchants.isActive()){
-                throw new CustomBadRequest("Merchant is not active");
-            }
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email,password));
             if(authentication.isAuthenticated()){
                 String role = authentication.getAuthorities().stream().findFirst().orElseThrow().getAuthority();
-                TokenResponse token = tokenService.generateToken(email,teams.getId(),merchants.getId(),role);
-                List<MerchantResponse.Team> team = getTeams(merchants.getId());
-                MerchantResponse.ApiKeyResponse apiKey = new MerchantResponse.ApiKeyResponse(merchants.getTestApiKey().getPublicKey(),merchants.getTestApiKey().getSecretKey());
-                return new MerchantResponse(merchants.getId(),merchants.getName(),merchants.getEmail(),merchants.getPhone(),merchants.getAddress(),role, team,merchants.isActive(),apiKey,token);
+                TokenResponse token = tokenService.generateToken(email,teams.getId(),teams.getMerchants().getId(),role);
+                List<MerchantResponse.Team> team = getTeams(teams.getMerchants().getId());
+                MerchantResponse.ApiKeyResponse apiKey = new MerchantResponse.ApiKeyResponse(teams.getMerchants().getTestApiKey().getPublicKey(),teams.getMerchants().getTestApiKey().getSecretKey());
+                return new MerchantResponse(teams.getMerchants().getId(),teams.getMerchants().getName(),teams.getMerchants().getEmail(),teams.getMerchants().getPhone(),teams.getMerchants().getAddress(),role, team,teams.getMerchants().isActive(),apiKey,token);
             }else{
                 return new MerchantResponse(null,null,null,null,null,null,null,false,null,null);
             }
